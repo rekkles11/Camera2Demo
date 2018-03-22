@@ -32,12 +32,11 @@ import wangbin.graduation.com.camera2demo.Entity.Folder;
 import wangbin.graduation.com.camera2demo.Entity.Image;
 import wangbin.graduation.com.camera2demo.utils.TopPopup;
 
-
 /**
  * Created by momo on 2018/3/8.
  */
 
-public class AlbumFragment extends Fragment implements View.OnClickListener{
+public class AlbumFragment extends Fragment implements View.OnClickListener {
 
     private View mView;
     private TopPopup mTopPopup;
@@ -45,7 +44,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener{
     private Activity mActivity;
     private int mScreenW;
     private int mScreenH;
-    private Boolean isPop =false;
+    private Boolean isPop = false;
 
     private static final int LOAD_ALL = 0;
     private static final int LOADER_CATEGORY = 1;
@@ -60,36 +59,34 @@ public class AlbumFragment extends Fragment implements View.OnClickListener{
     private int mColumns = 3;
     private ImageView mArrow;
 
-
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         mContext = getContext();
         mActivity = getActivity();
-        return inflater.inflate(R.layout.fragment_album,container,false);
+        return inflater.inflate(R.layout.fragment_album, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         getActivity().getLoaderManager().initLoader(0, null, mLoaderCallback);
         getScreenPixels();
-        mArrow =(ImageView)view.findViewById(R.id.arrow_album);
-        mPicRecycleView = (RecyclerView)view.findViewById(R.id.pic_recycle_view);
-        mPicRecycleView.setLayoutManager(new GridLayoutManager(mContext,mColumns));
+        mArrow = (ImageView) view.findViewById(R.id.arrow_album);
+        mPicRecycleView = (RecyclerView) view.findViewById(R.id.pic_recycle_view);
+        mPicRecycleView.setLayoutManager(new GridLayoutManager(mContext, mColumns));
         mFolderAdapter = new FolderAdapter(mContext);
         mFolderAdapter.setOnItemClickListener(new FolderAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(View view, int pos, Folder folder) {
                 mImageList.clear();
                 mImageList.addAll(folder.getImageList());
-                mImageAdapter.setData(mImageList,pos);
+                mImageAdapter.setData(mImageList, pos);
                 mImageAdapter.notifyDataSetChanged();
                 mTopPopup.dismiss();
             }
         });
-        mTopPopup = new TopPopup(mContext,mScreenW,mScreenH,isPop,mFolderAdapter);
-        mImageAdapter = new ImageAdapter(mContext,mScreenW,mColumns);
+        mTopPopup = new TopPopup(mContext, mScreenW, mScreenH, isPop, mFolderAdapter);
+        mImageAdapter = new ImageAdapter(mContext, mScreenW, mColumns);
         mPicRecycleView.setAdapter(mImageAdapter);
         mView = (View) view.findViewById(R.id.picture_all);
         mView.setOnClickListener(this);
@@ -108,7 +105,13 @@ public class AlbumFragment extends Fragment implements View.OnClickListener{
         super.onActivityCreated(savedInstanceState);
     }
 
-    private void getScreenPixels(){
+    @Override
+    public void onStart() {
+        super.onStart();
+        mImageAdapter.notifyDataSetChanged();
+    }
+
+    private void getScreenPixels() {
         DisplayMetrics metrics = new DisplayMetrics();
         mActivity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         mScreenW = metrics.widthPixels;
@@ -116,17 +119,17 @@ public class AlbumFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    public static AlbumFragment newInstance(){
+    public static AlbumFragment newInstance() {
         return new AlbumFragment();
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.picture_all:
                 getActivity().getLoaderManager().restartLoader(0, null, mLoaderCallback);
-                mTopPopup.showAsDropDown(view,0,20);
-                if (isPop){
+                mTopPopup.showAsDropDown(view, 0, 20);
+                if (isPop) {
                     doPopUpAnimation(1f);
                     mArrow.setImageResource(R.drawable.arrow_up);
                     isPop = false;
@@ -137,91 +140,89 @@ public class AlbumFragment extends Fragment implements View.OnClickListener{
     }
 
     private void doPopUpAnimation(float derection) {
-        float x = derection*180;
-        Animation animation = new RotateAnimation(0,derection*180,
-                Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+        float x = derection * 180;
+        Animation animation = new RotateAnimation(0, derection * 180,
+                                                  Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         animation.setDuration(200);
         animation.setFillAfter(true);
         mArrow.startAnimation(animation);
     }
 
-
     private LoaderManager.LoaderCallbacks<Cursor> mLoaderCallback = new
             LoaderManager.LoaderCallbacks<Cursor>() {
-        private final String[] IMAGE_PROJECTION = {
-                MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.DISPLAY_NAME,
-                MediaStore.Images.Media.DATE_ADDED,
-                MediaStore.Images.Media._ID};
-        @Override
-        public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-            CursorLoader cursorLoader = new CursorLoader(getActivity(),
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
-                    null, null, IMAGE_PROJECTION[2] + " DESC");
-            return cursorLoader;
+                private final String[] IMAGE_PROJECTION = {
+                        MediaStore.Images.Media.DATA,
+                        MediaStore.Images.Media.DISPLAY_NAME,
+                        MediaStore.Images.Media.DATE_ADDED,
+                        MediaStore.Images.Media._ID};
 
-        }
+                @Override
+                public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+                    CursorLoader cursorLoader = new CursorLoader(getActivity(),
+                                                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
+                                                                 null, null, IMAGE_PROJECTION[2] + " DESC");
+                    return cursorLoader;
 
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+                }
 
-            if (cursor!=null){
-                int i = 0;
-                int count = cursor.getCount();
-                if (count>0){
-                    List<Image> tempImageList = new ArrayList<>();
-                    cursor.moveToFirst();
-                    do {
-                        String path = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_PROJECTION[0]));
-                        String name = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_PROJECTION[1]));
-                        Image image = new Image();
-                        image.setPath(path);
-                        image.setName(name);
-                        tempImageList.add(image);
+                @Override
+                public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 
-                        if (!hasFolderGened){
-                            File imageFile = new File(path);
-                            File floderFile = imageFile.getParentFile();
-                            Folder folder = new Folder();
-                            folder.setName(floderFile.getName());
-                            folder.setPath(floderFile.getPath());
-                            folder.setCover(image);
-                            if (!mFolderList.contains(folder)){
-                                List<Image> imageList = new ArrayList<>();
-                                imageList.add(image);
-                                folder.setImageList(imageList);
-                                mFolderList.add(folder);
-                            }else {
-                                Folder f = mFolderList.get(mFolderList.indexOf(folder));
-                                f.getImageList().add(image);
-                            }
+                    if (cursor != null) {
+                        int i = 0;
+                        int count = cursor.getCount();
+                        if (count > 0) {
+                            List<Image> tempImageList = new ArrayList<>();
+                            cursor.moveToFirst();
+                            do {
+                                String path = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_PROJECTION[0]));
+                                String name = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_PROJECTION[1]));
+                                Image image = new Image();
+                                image.setPath(path);
+                                image.setName(name);
+                                tempImageList.add(image);
+
+                                if (!hasFolderGened) {
+                                    File imageFile = new File(path);
+                                    File floderFile = imageFile.getParentFile();
+                                    Folder folder = new Folder();
+                                    folder.setName(floderFile.getName());
+                                    folder.setPath(floderFile.getPath());
+                                    folder.setCover(image);
+                                    if (!mFolderList.contains(folder)) {
+                                        List<Image> imageList = new ArrayList<>();
+                                        imageList.add(image);
+                                        folder.setImageList(imageList);
+                                        mFolderList.add(folder);
+                                    } else {
+                                        Folder f = mFolderList.get(mFolderList.indexOf(folder));
+                                        f.getImageList().add(image);
+                                    }
+                                }
+                            } while (cursor.moveToNext() && i++ < 1200);
+
+                            mImageList = tempImageList;
+                            //更新两个adapter
+
+                            hasFolderGened = true;
                         }
-                    }while (cursor.moveToNext()&&i++<1200);
+                        if (mAllImageList.size() <= 0) {
+                            mAllImageList.clear();
+                            mAllImageList.addAll(mImageList);
+                            mImageAdapter.setAllImageList(mAllImageList);
+                        }
 
-                    mImageList=tempImageList;
-                    //更新两个adapter
+                        mFolderAdapter.setData(mFolderList);
+                        mImageAdapter.setData(mImageList, -1);
+                        mImageAdapter.setFolderList(mFolderList);
+                    }
 
-                    hasFolderGened = true;
                 }
-                if (mAllImageList.size()<=0){
-                    mAllImageList.clear();
-                    mAllImageList.addAll(mImageList);
-                    mImageAdapter.setAllImageList(mAllImageList);
+
+                @Override
+                public void onLoaderReset(Loader<Cursor> loader) {
+
                 }
-
-                mFolderAdapter.setData(mFolderList);
-                mImageAdapter.setData(mImageList,-1);
-                mImageAdapter.setFolderList(mFolderList);
-            }
-
-
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-
-        }
-    };
-
+            };
 
 }

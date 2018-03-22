@@ -19,6 +19,7 @@ import wangbin.graduation.com.camera2demo.Entity.Folder;
 import wangbin.graduation.com.camera2demo.Entity.Image;
 import wangbin.graduation.com.camera2demo.PreviewActivity;
 import wangbin.graduation.com.camera2demo.R;
+import wangbin.graduation.com.camera2demo.view.CircleSelectView;
 
 /**
  * Created by momo on 2018/3/12.
@@ -28,7 +29,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     private Context mContext;
     private List<Image> mImageList;
-    private ArrayList<Integer> mSelectList = new ArrayList<>();
+    public static ArrayList<Integer> mSelectList = new ArrayList<>();
     private List<Folder> mFolderList = new ArrayList<>();
     private int mFolderPos;
     private static int mItemW;
@@ -61,19 +62,18 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, PreviewActivity.class);
-                intent.putIntegerArrayListExtra("selectPosList", mSelectList);
                 intent.putExtra("allImageList", (Serializable) mAllImageList);
                 intent.putExtra("selectPos", mPreFolderImages + position);
                 ((Activity) mContext).startActivity(intent);
             }
         });
 
-        if (hasSelected(position)) {
-            holder.mSelectImage.setSelected(true);
-            Glide.with(mContext).load(R.drawable.full_circle).into(holder.mSelectImage);
+        int num = hasSelected(position);
+        if (num > 0) {
+            holder.mSelectImage.setNumber(num);
+            holder.mSelectImage.setChoose(true);
         } else {
-            holder.mSelectImage.setSelected(false);
-            Glide.with(mContext).load(R.drawable.circle).into(holder.mSelectImage);
+            holder.mSelectImage.setChoose(false);
         }
 
         holder.mSelectImage.setOnClickListener(new View.OnClickListener() {
@@ -81,12 +81,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             public void onClick(View view) {
                 if (view.isSelected()) {
                     mSelectList.remove((Object) (mPreFolderImages + position));
-                    view.setSelected(false);
-                    Glide.with(mContext).load(R.drawable.circle).into(holder.mSelectImage);
+                    ((CircleSelectView) view).setChoose(false);
+                    notifyDataSetChanged();
                 } else {
+                    if (mSelectList.size()>=9){
+                        return;
+                    }
+                    ((CircleSelectView) view).setNumber(mSelectList.size() + 1);
                     mSelectList.add(mPreFolderImages + position);
-                    view.setSelected(true);
-                    Glide.with(mContext).load(R.drawable.full_circle).into(holder.mSelectImage);
+                    ((CircleSelectView) view).setChoose(true);
                 }
             }
         });
@@ -98,13 +101,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         }
     }
 
-    private boolean hasSelected(int position) {
-        for (Integer i : mSelectList) {
-            if (position == i) {
-                return true;
+    private int hasSelected(int position) {
+        for (int i = 0; i < mSelectList.size(); i++) {
+            if (position == mSelectList.get(i)) {
+                return i + 1;
             }
         }
-        return false;
+        return -1;
     }
 
     @Override
@@ -131,7 +134,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView mImageView;
-        private ImageView mSelectImage;
+        private CircleSelectView mSelectImage;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -139,7 +142,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             ViewGroup.LayoutParams layoutParams = mImageView.getLayoutParams();
             layoutParams.width = mItemW;
             layoutParams.height = mItemW;
-            mSelectImage = (ImageView) itemView.findViewById(R.id.circle_image_adapter);
+            mSelectImage = (CircleSelectView) itemView.findViewById(R.id.circle_image_adapter);
         }
     }
 

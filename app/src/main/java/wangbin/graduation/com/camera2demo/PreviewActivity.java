@@ -13,20 +13,22 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import wangbin.graduation.com.camera2demo.Adapter.ImageAdapter;
 import wangbin.graduation.com.camera2demo.Adapter.PicRecycleAdapter;
 import wangbin.graduation.com.camera2demo.Adapter.PreviewPagerAdapter;
 import wangbin.graduation.com.camera2demo.Entity.Image;
+import wangbin.graduation.com.camera2demo.view.CircleSelectView;
 
 /**
  * Created by momo on 2018/3/12.
  */
 
-public class PreviewActivity extends Activity {
-//    private ImageView mPreImage;
+public class PreviewActivity extends Activity implements View.OnClickListener {
+    //    private ImageView mPreImage;
+    private CircleSelectView photoChoose;
     private ViewPager mViewPager;
     private RecyclerView mRecyclerView;
     private ArrayList<Integer> mSelectPosList = new ArrayList<>();
@@ -37,6 +39,7 @@ public class PreviewActivity extends Activity {
     private int mSelectPos;
     private List<Image> mAllImageList = new ArrayList<>();
     private ImageView mBackView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,36 +48,41 @@ public class PreviewActivity extends Activity {
         initView();
     }
 
-//    private void initView() {
-//        mBackView = (ImageView) findViewById(R.id.back_preview);
-//        mSelectPosList = (ArrayList<Integer>) getIntent().getIntegerArrayListExtra("selectPosList");
-//        mSelectPos = getIntent().getIntExtra("selectPos",-1);
-//        mAllImageList = (List<Image>) getIntent().getSerializableExtra("allImageList");
-//        mViewPager = (ViewPager)findViewById(R.id.viewpager_preview);
-//        mEdit =findViewById(R.id.edit_preview);
-//        initData();
-//    }/storage/emulated/0/DCIM/pic.jpg
+    //    private void initView() {
+    //        mBackView = (ImageView) findViewById(R.id.back_preview);
+    //        mSelectPosList = (ArrayList<Integer>) getIntent().getIntegerArrayListExtra("selectPosList");
+    //        mSelectPos = getIntent().getIntExtra("selectPos",-1);
+    //        mAllImageList = (List<Image>) getIntent().getSerializableExtra("allImageList");
+    //        mViewPager = (ViewPager)findViewById(R.id.viewpager_preview);
+    //        mEdit =findViewById(R.id.edit_preview);
+    //        initData();
+    //    }/storage/emulated/0/DCIM/pic.jpg
 
     private void initData() {
-        mSelectPosList = (ArrayList<Integer>) getIntent().getIntegerArrayListExtra("selectPosList");
+        mSelectPosList = ImageAdapter.mSelectList;
         mSelectPos = getIntent().getIntExtra("selectPos", -1);
         mAllImageList = (getIntent().getParcelableArrayListExtra("allImageList"));
+        if (mSelectPos == -1) {
+            finish();
+        }
     }
 
     private void initView() {
+        photoChoose = findViewById(R.id.photo_choose);
+        photoChoose.setOnClickListener(this);
         mBackView = (ImageView) findViewById(R.id.back_preview);
         mViewPager = (ViewPager) findViewById(R.id.viewpager_preview);
         findViewById(R.id.top_tab).setAlpha(0.95f);
         findViewById(R.id.recycle_fl).setAlpha(0.95f);
         findViewById(R.id.bottom_tab).setAlpha(0.95f);
-        mRecyclerView=(RecyclerView) findViewById(R.id.recycle_preview);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycle_preview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mEdit = (TextView) findViewById(R.id.edit_preview);
-        mAdapter = new PicRecycleAdapter(this, mSelectPosList, mAllImageList,mSelectPos);
+        mAdapter = new PicRecycleAdapter(this, mSelectPosList, mAllImageList, mSelectPos);
         mRecyclerView.setAdapter(mAdapter);
-        mPagerAdapter = new PreviewPagerAdapter(this,mAllImageList);
+        mPagerAdapter = new PreviewPagerAdapter(this, mAllImageList);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setCurrentItem(mSelectPos);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -85,7 +93,12 @@ public class PreviewActivity extends Activity {
 
             @Override
             public void onPageSelected(int position) {
-                mAdapter.setSelectedItem(position);
+                if (mAdapter.setSelectedItem(position)) {
+                    photoChoose.setNumber(hasSelected(position));
+                    photoChoose.setChoose(true);
+                } else {
+                    photoChoose.setChoose(false);
+                }
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -99,45 +112,87 @@ public class PreviewActivity extends Activity {
             public void click(int preSelect) {
                 mSelectPos = preSelect;
                 mAdapter.setSelectedItem(mSelectPos);
+                photoChoose.setNumber(hasSelected(mSelectPos));
+                photoChoose.setChoose(true);
                 mAdapter.notifyDataSetChanged();
                 mViewPager.setCurrentItem(preSelect);
             }
         });
-        mEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(PreviewActivity.this,EditImageActivity.class);
-                intent.putExtra("editImage",mAllImageList.get(mViewPager.getCurrentItem()).getPath());
-                startActivityForResult(intent,100);
-            }
-        });
-        mBackView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PreviewActivity.this.finish();
-            }
-        });
+        mEdit.setOnClickListener(this);
+        mBackView.setOnClickListener(this);
+
+        int i = hasSelected(mSelectPos);
+        if (i > 0) {
+            photoChoose.setNumber(i);
+            photoChoose.setChoose(true);
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode ==100&&resultCode ==101){
+        if (requestCode == 100 && resultCode == 101) {
+            if (mSelectPosList.size() >= 9) {
+                return;
+            }
             String path = data.getStringExtra("imagePath");
-            Image image =new Image();
+            Image image = new Image();
             image.setName(path);
             image.setPath(path);
             int index = 0;
-            for (int i =0;i<mSelectPosList.size();i++){
-                mSelectPosList.set(i,mSelectPosList.get(i)+1);
+            for (int i = 0; i < mSelectPosList.size(); i++) {
+                mSelectPosList.set(i, mSelectPosList.get(i) + 1);
             }
-            mSelectPosList.add(index,index);
-            mAllImageList.add(index,image);
+            mSelectPosList.add(index, index);
+            mAllImageList.add(index, image);
             mSelectPos = index;
             mAdapter.setSelectedItem(index);
             mAdapter.notifyDataSetChanged();
             mPagerAdapter.notifyDataSetChanged();
             mViewPager.setCurrentItem(index);
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.back_preview:
+                PreviewActivity.this.finish();
+                break;
+            case R.id.edit_preview:
+                Intent intent = new Intent(PreviewActivity.this, EditImageActivity.class);
+                intent.putExtra("editImage", mAllImageList.get(mViewPager.getCurrentItem()).getPath());
+                startActivityForResult(intent, 100);
+                break;
+            case R.id.photo_choose:
+                if (photoChoose.isSelected()) {
+                    int index = photoChoose.getNumber();
+                    if (index != -1) {
+                        mSelectPosList.remove(index - 1);
+                        photoChoose.setChoose(false);
+                        mAdapter.setSelectedItem(mViewPager.getCurrentItem());
+                    }
+                } else {
+                    if (mSelectPosList.size() >= 9) {
+                        return;
+                    }
+                    mSelectPos = mViewPager.getCurrentItem();
+                    mSelectPosList.add(mSelectPos);
+                    photoChoose.setNumber(mSelectPosList.size());
+                    photoChoose.setChoose(true);
+                    mAdapter.setSelectedItem(mSelectPos);
+                }
+                mAdapter.notifyDataSetChanged();
+                break;
+        }
+    }
+
+    private int hasSelected(int position) {
+        for (int i = 0; i < mSelectPosList.size(); i++) {
+            if (position == mSelectPosList.get(i)) {
+                return i + 1;
+            }
+        }
+        return -1;
     }
 }

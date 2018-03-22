@@ -23,6 +23,12 @@
             android:src="@drawable/arrow_left"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"/>
+        <wangbin.graduation.com.camera2demo.view.CircleSelectView
+            android:id="@+id/photo_choose"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center_vertical|right"
+            android:layout_width="20dp"
+            android:layout_height="20dp"/>
     </FrameLayout>
     <FrameLayout
         android:id="@+id/recycle_fl"

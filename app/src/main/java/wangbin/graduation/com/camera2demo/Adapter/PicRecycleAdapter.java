@@ -74,11 +74,13 @@ public class PicRecycleAdapter extends RecyclerView.Adapter<PicRecycleAdapter.Vi
      * 设置当前展示的图片（ which 是相对mAllImageList）
      * @param which
      */
-    public void setSelectedItem(int which) {
+    public boolean setSelectedItem(int which) {
         if (isInMyPosList(which)) {
             selectedItem = which;
+            return true;
         } else {
             selectedItem = -1;
+            return false;
         }
 
     }
