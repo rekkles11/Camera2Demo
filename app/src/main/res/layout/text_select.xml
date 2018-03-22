@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+    <RelativeLayout
+        android:id="@+id/text_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible">
+        <EditText
+            android:id="@+id/text_select_et"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent"
+            android:hint="添加文字"
+            android:textColorHint="@android:color/holo_red_dark"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="18sp"/>
+
+        <wangbin.graduation.com.camera2demo.view.ColorChooseView
+            android:layout_alignParentBottom="true"
+            android:id="@+id/color_choose_view_text"
+            android:layout_width="match_parent"
+            android:layout_height="38dp" />
+    </RelativeLayout>
+
+
+
+</FrameLayout>
