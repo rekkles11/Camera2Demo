@@ -68,7 +68,6 @@ import static android.content.ContentValues.TAG;
 public class Camera2Fragment extends Fragment
         implements View.OnClickListener, FragmentCompat.OnRequestPermissionsResultCallback {
 
-
     private TextureView mTextureView;
     private ImageView mButtonVideo;
 
@@ -98,7 +97,7 @@ public class Camera2Fragment extends Fragment
     private Size mVideoSize;
     private String mNextVideoAbsolutePath;
     private File mFile;
-    private String pathName = "/sdcard/Pictures/"+System.currentTimeMillis()+".jpg";
+    private String pathName = "/sdcard/Pictures/" + System.currentTimeMillis() + ".jpg";
 
     private static final int STATE_PREVIEW = 0;
     private static final int STATE_WAITING_LOCK = 1;
@@ -119,6 +118,7 @@ public class Camera2Fragment extends Fragment
     };
 
     private int mSensorOrientation;
+
     static {
         DEFAULT_ORIENTATIONS.append(Surface.ROTATION_0, 90);
         DEFAULT_ORIENTATIONS.append(Surface.ROTATION_90, 0);
@@ -138,7 +138,6 @@ public class Camera2Fragment extends Fragment
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_camera2, container, false);
     }
-
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
@@ -180,7 +179,7 @@ public class Camera2Fragment extends Fragment
         mFile = new File(pathName);
     }
 
-    private void startRecordingVideo(){
+    private void startRecordingVideo() {
         if (null == mCameraDevice || !mTextureView.isAvailable() || null == mPreviewSize) {
             return;
         }
@@ -189,7 +188,7 @@ public class Camera2Fragment extends Fragment
             setUpMediaRecorder();
             SurfaceTexture texture = mTextureView.getSurfaceTexture();
             assert texture != null;
-            texture.setDefaultBufferSize(mPreviewSize.getWidth(),mPreviewSize.getHeight());
+            texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
             mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
             List<Surface> surfaces = new ArrayList<>();
 
@@ -219,11 +218,9 @@ public class Camera2Fragment extends Fragment
                 public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
 
                 }
-            },mBackgroundHandler);
+            }, mBackgroundHandler);
 
-
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -236,15 +233,14 @@ public class Camera2Fragment extends Fragment
         Activity activity = getActivity();
         if (null != activity) {
             Toast.makeText(activity, "Video saved: " + mNextVideoAbsolutePath,
-                    Toast.LENGTH_SHORT).show();
+                           Toast.LENGTH_SHORT).show();
             Log.d(TAG, "Video saved: " + mNextVideoAbsolutePath);
         }
         mNextVideoAbsolutePath = null;
         createCameraPreviewSession();
     }
 
-
-        //设置录制参数
+    //设置录制参数
 
     private void setUpMediaRecorder() throws IOException {
         final Activity activity = getActivity();
@@ -274,12 +270,12 @@ public class Camera2Fragment extends Fragment
         }
         mMediaRecorder.prepare();
     }
+
     private String getVideoFilePath(Context context) {
-        final File dir =new File("/sdcard/Pictures/");
+        final File dir = new File("/sdcard/Pictures/");
         return (dir == null ? "" : (dir.getAbsolutePath() + "/"))
                 + System.currentTimeMillis() + ".mp4";
     }
-
 
     @Override
     public void onResume() {
@@ -327,10 +323,10 @@ public class Camera2Fragment extends Fragment
     }
 
     private void openCamera(int width, int height) {
-//        if (!hasPermissionsGranted(VIDEO_PERMISSIONS)) {
-//            requestCameraPermission();
-//            return;
-//        }
+        //        if (!hasPermissionsGranted(VIDEO_PERMISSIONS)) {
+        //            requestCameraPermission();
+        //            return;
+        //        }
         if (!PermissionUtil.checkAndOpenPermissions(getActivity(), VIDEO_PERMISSIONS)) {
             return;
         }
@@ -352,7 +348,7 @@ public class Camera2Fragment extends Fragment
                 return;
             }
             manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -394,6 +390,7 @@ public class Camera2Fragment extends Fragment
             PermissionUtil.gotoSystemSetting(getActivity());
         }
     }
+
     private boolean hasPermissionsGranted(String[] permissions) {
         for (String permission : permissions) {
             if (ActivityCompat.checkSelfPermission(getActivity(), permission)
@@ -433,6 +430,7 @@ public class Camera2Fragment extends Fragment
         }
 
     };
+
     private void createCameraPreviewSession() {
         try {
             closePreviewSession();
@@ -443,22 +441,22 @@ public class Camera2Fragment extends Fragment
             Surface surface = new Surface(texture);
             mPreviewRequestBuilder.addTarget(surface);
             mCameraDevice.createCaptureSession(Arrays.asList(surface, mImageReader.getSurface()),
-                    new CameraCaptureSession.StateCallback() {
-                @Override
-                public void onConfigured(@NonNull CameraCaptureSession session) {
-                    mPreviewSession = session;
-                    updatePreview();
-                }
+                                               new CameraCaptureSession.StateCallback() {
+                                                   @Override
+                                                   public void onConfigured(@NonNull CameraCaptureSession session) {
+                                                       mPreviewSession = session;
+                                                       updatePreview();
+                                                   }
 
-                @Override
-                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-                    Activity activity = getActivity();
-                    if (null != activity) {
-                        Toast.makeText(activity, "Failed", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            },mBackgroundHandler);
-        }catch (Exception e){
+                                                   @Override
+                                                   public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+                                                       Activity activity = getActivity();
+                                                       if (null != activity) {
+                                                           Toast.makeText(activity, "Failed", Toast.LENGTH_SHORT).show();
+                                                       }
+                                                   }
+                                               }, mBackgroundHandler);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -511,6 +509,7 @@ public class Camera2Fragment extends Fragment
                 }
             }
         }
+
         @Override
         public void onCaptureProgressed(@NonNull CameraCaptureSession session,
                                         @NonNull CaptureRequest request,
@@ -531,11 +530,11 @@ public class Camera2Fragment extends Fragment
         try {
             // This is how to tell the camera to trigger.
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-                    CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+                                       CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
             // Tell #mCaptureCallback to wait for the precapture sequence to be set.
             mState = STATE_WAITING_PRECAPTURE;
             mPreviewSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
+                                    mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -554,12 +553,12 @@ public class Camera2Fragment extends Fragment
 
             // Use the same AE and AF modes as the preview.
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-//            setAutoFlash(captureBuilder);
+                               CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            //            setAutoFlash(captureBuilder);
 
             // Orientation
-//            int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-//            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation(rotation));
+            //            int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+            //            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation(rotation));
 
             CameraCaptureSession.CaptureCallback CaptureCallback
                     = new CameraCaptureSession.CaptureCallback() {
@@ -587,14 +586,14 @@ public class Camera2Fragment extends Fragment
         try {
             // Reset the auto-focus trigger
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                    CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-//            setAutoFlash(mPreviewRequestBuilder);
+                                       CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+            //            setAutoFlash(mPreviewRequestBuilder);
             mPreviewSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
+                                    mBackgroundHandler);
             // After this, the camera will go back to the normal state of preview.
             mState = STATE_PREVIEW;
             mPreviewSession.setRepeatingRequest(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
+                                                mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -607,8 +606,8 @@ public class Camera2Fragment extends Fragment
                 @Override
                 public void run() {
                     Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getActivity(),EditImageActivity.class);
-                    intent.putExtra("editImage",pathName);
+                    Intent intent = new Intent(getActivity(), EditImageActivity.class);
+                    intent.putExtra("editImage", pathName);
                     startActivity(intent);
                 }
             });
@@ -620,6 +619,7 @@ public class Camera2Fragment extends Fragment
             return;
         }
         try {
+            Log.e("infoo","updatePreView()");
             setUpCaptureRequestBuilder(mPreviewRequestBuilder);
             HandlerThread thread = new HandlerThread("CameraPreview");
             thread.start();
@@ -628,6 +628,7 @@ public class Camera2Fragment extends Fragment
             e.printStackTrace();
         }
     }
+
     private void setUpCaptureRequestBuilder(CaptureRequest.Builder builder) {
         builder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
     }
@@ -668,13 +669,13 @@ public class Camera2Fragment extends Fragment
                 throw new RuntimeException("Cannot get available preview/video sizes");
             }
 
-//            Size largest = Collections.max(
-//                    Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
-//                    new CompareSizesByArea());
+            //            Size largest = Collections.max(
+            //                    Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
+            //                    new CompareSizesByArea());
             mVideoSize = chooseVideoSize(map.getOutputSizes(MediaRecorder.class));
-            mImageReader = ImageReader.newInstance(mVideoSize.getWidth(),mVideoSize.getHeight(),
-                    ImageFormat.JPEG,2);
-            mImageReader.setOnImageAvailableListener(mOnImageAvailableListener,mBackgroundHandler);
+            mImageReader = ImageReader.newInstance(mVideoSize.getWidth(), mVideoSize.getHeight(),
+                                                   ImageFormat.JPEG, 2);
+            mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 
             int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
             //noinspection ConstantConditions
@@ -719,8 +720,8 @@ public class Camera2Fragment extends Fragment
                 maxPreviewHeight = MAX_PREVIEW_HEIGHT;
             }
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
-                    rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
-                    maxPreviewHeight, mVideoSize);
+                                             rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
+                                             maxPreviewHeight, mVideoSize);
             mMediaRecorder = new MediaRecorder();
 
         } catch (Exception e) {
@@ -790,11 +791,8 @@ public class Camera2Fragment extends Fragment
         return choices[choices.length - 1];
     }
 
-
-
     private static Size chooseOptimalSize(Size[] choices, int textureViewWidth,
                                           int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
-
         List<Size> bigEnough = new ArrayList<>();
         List<Size> notBigEnough = new ArrayList<>();
         int w = aspectRatio.getWidth();
@@ -819,13 +817,14 @@ public class Camera2Fragment extends Fragment
             return choices[0];
         }
     }
+
     static class CompareSizesByArea implements Comparator<Size> {
 
         @Override
         public int compare(Size lhs, Size rhs) {
             // We cast here to ensure the multiplications won't overflow
             return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
-                    (long) rhs.getWidth() * rhs.getHeight());
+                                       (long) rhs.getWidth() * rhs.getHeight());
         }
 
     }
@@ -871,20 +870,20 @@ public class Camera2Fragment extends Fragment
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            parent.requestPermissions(new String[]{Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO},
-                                    1);
+                            parent.requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},
+                                                      1);
                         }
                     })
                     .setNegativeButton(android.R.string.cancel,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Activity activity = parent.getActivity();
-                                    if (activity != null) {
-                                        activity.finish();
-                                    }
-                                }
-                            })
+                                       new DialogInterface.OnClickListener() {
+                                           @Override
+                                           public void onClick(DialogInterface dialog, int which) {
+                                               Activity activity = parent.getActivity();
+                                               if (activity != null) {
+                                                   activity.finish();
+                                               }
+                                           }
+                                       })
                     .create();
         }
     }
@@ -892,7 +891,6 @@ public class Camera2Fragment extends Fragment
     public static Camera2Fragment newInstance() {
         return new Camera2Fragment();
     }
-
 
     private void startBackgroundThread() {
         mBackgroundThread = new HandlerThread("CameraBackground");
@@ -911,11 +909,9 @@ public class Camera2Fragment extends Fragment
         }
     }
 
-
-
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.video:
                 takePicture();
                 break;
@@ -930,11 +926,11 @@ public class Camera2Fragment extends Fragment
         try {
             // This is how to tell the camera to lock focus.
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                    CameraMetadata.CONTROL_AF_TRIGGER_START);
+                                       CameraMetadata.CONTROL_AF_TRIGGER_START);
             // Tell #mCaptureCallback to wait for the lock.
             mState = STATE_WAITING_LOCK;
             mPreviewSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
+                                    mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
