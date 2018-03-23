@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -255,8 +256,8 @@ public class EditView extends android.support.v7.widget.AppCompatImageView {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mIntoScribble) {
-                    mStopX = getX();
-                    mStopY = getY();
+                    mStopX = event.getX();
+                    mStopY = event.getY();
                     mIsScribble = true;
                     invalidate();
 //                    return true;
@@ -286,12 +287,8 @@ public class EditView extends android.support.v7.widget.AppCompatImageView {
                             mMoveMatrix.postRotate(dgrees,mDecalList.get(mDragTag).mCenterX,
                                     mDecalList.get(mDragTag).mCenterY);
                         }
-                        Log.e("log----",String.valueOf(mDecalList.get(mDragTag).mCenterX)+
-                                "   "+String.valueOf(mDecalList.get(mDragTag).mCenterY)+"  "
-                                +mStartPointF.x+"   "+mStartPointF.y+" "+pointF.x+"  "+pointF.y);
                     }
                     mDecalList.get(mDragTag).mMatrix.set(mMoveMatrix);
-                    //                        getParent().requestDisallowInterceptTouchEvent(true);
                     invalidate();
 //                    return true;
                     break;
@@ -299,11 +296,13 @@ public class EditView extends android.support.v7.widget.AppCompatImageView {
 //                return true;
                 break;
             case MotionEvent.ACTION_POINTER_UP:
+                if (mDragTag!=-1&&mIntoDecall) {
+                    mDownMatrix.set(mDecalList.get(mDragTag).mMatrix);
+                }
                 mFingers -=1;
                 break;
             case MotionEvent.ACTION_UP:
                 mFingers = 0;
-                isScale = false;
                 if (mIntoScribble){
                     mIsScribble = false;
                 }

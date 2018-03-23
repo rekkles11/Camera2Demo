@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import wangbin.graduation.com.camera2demo.Adapter.ImageAdapter;
@@ -37,7 +38,7 @@ public class PreviewActivity extends Activity implements View.OnClickListener {
     private String mPrePath;
     private PreviewPagerAdapter mPagerAdapter;
     private int mSelectPos;
-    private List<Image> mAllImageList = new ArrayList<>();
+    private List<Image> mAllImageList = Collections.synchronizedList(new ArrayList<Image>());;
     private ImageView mBackView;
 
     @Override
@@ -48,20 +49,11 @@ public class PreviewActivity extends Activity implements View.OnClickListener {
         initView();
     }
 
-    //    private void initView() {
-    //        mBackView = (ImageView) findViewById(R.id.back_preview);
-    //        mSelectPosList = (ArrayList<Integer>) getIntent().getIntegerArrayListExtra("selectPosList");
-    //        mSelectPos = getIntent().getIntExtra("selectPos",-1);
-    //        mAllImageList = (List<Image>) getIntent().getSerializableExtra("allImageList");
-    //        mViewPager = (ViewPager)findViewById(R.id.viewpager_preview);
-    //        mEdit =findViewById(R.id.edit_preview);
-    //        initData();
-    //    }/storage/emulated/0/DCIM/pic.jpg
-
     private void initData() {
         mSelectPosList = ImageAdapter.mSelectList;
         mSelectPos = getIntent().getIntExtra("selectPos", -1);
         mAllImageList = (getIntent().getParcelableArrayListExtra("allImageList"));
+
         if (mSelectPos == -1) {
             finish();
         }
@@ -93,6 +85,7 @@ public class PreviewActivity extends Activity implements View.OnClickListener {
 
             @Override
             public void onPageSelected(int position) {
+                mSelectPos = position;
                 if (mAdapter.setSelectedItem(position)) {
                     photoChoose.setNumber(hasSelected(position));
                     photoChoose.setChoose(true);
@@ -136,20 +129,22 @@ public class PreviewActivity extends Activity implements View.OnClickListener {
                 return;
             }
             String path = data.getStringExtra("imagePath");
-            Image image = new Image();
-            image.setName(path);
-            image.setPath(path);
-            int index = 0;
-            for (int i = 0; i < mSelectPosList.size(); i++) {
-                mSelectPosList.set(i, mSelectPosList.get(i) + 1);
-            }
-            mSelectPosList.add(index, index);
-            mAllImageList.add(index, image);
-            mSelectPos = index;
-            mAdapter.setSelectedItem(index);
-            mAdapter.notifyDataSetChanged();
+            mAllImageList.get(mSelectPos).setPath(path);
+//            Image image = new Image();
+//            image.setName(path);
+//            image.setPath(path);
+//            int index = 0;
+//            for (int i = 0; i < mSelectPosList.size(); i++) {
+//                mSelectPosList.set(i, mSelectPosList.get(i) + 1);
+//            }
+//            mSelectPosList.add(index, index);
+//            mAllImageList.add(index, image);
+//            mSelectPos = index;
+//            mAdapter.setSelectedItem(index);
+            mPagerAdapter.setIsNewPath(mSelectPos);
             mPagerAdapter.notifyDataSetChanged();
-            mViewPager.setCurrentItem(index);
+            mViewPager.setCurrentItem(mSelectPos);
+            mAdapter.notifyDataSetChanged();
         }
     }
 
