@@ -24,6 +24,7 @@ import android.widget.PopupWindow;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import wangbin.graduation.com.camera2demo.Adapter.FolderAdapter;
@@ -51,7 +52,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
     private boolean hasFolderGened = false;
     private List<Folder> mFolderList = new ArrayList<>();
     private List<Image> mImageList = new ArrayList<>();
-    private List<Image> mAllImageList = new ArrayList<>();
+    private List<Image> mAllImageList = new LinkedList<>();
 
     public FolderAdapter mFolderAdapter;
     public ImageAdapter mImageAdapter;

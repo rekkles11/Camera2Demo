@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import wangbin.graduation.com.camera2demo.Adapter.ImageAdapter;
@@ -37,7 +38,7 @@ public class PreviewActivity extends Activity implements View.OnClickListener {
     private String mPrePath;
     private PreviewPagerAdapter mPagerAdapter;
     private int mSelectPos;
-    private List<Image> mAllImageList = new ArrayList<>();
+    private List<Image> mAllImageList = new LinkedList<>();
     private ImageView mBackView;
 
     @Override

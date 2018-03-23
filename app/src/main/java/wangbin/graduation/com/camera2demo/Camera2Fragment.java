@@ -722,6 +722,7 @@ public class Camera2Fragment extends Fragment
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class),
                                              rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
                                              maxPreviewHeight, mVideoSize);
+            Log.e("infoo","mPreViewSize == "+mPreviewSize);
             mMediaRecorder = new MediaRecorder();
 
         } catch (Exception e) {
