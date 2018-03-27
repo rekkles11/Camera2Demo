@@ -39,6 +39,7 @@ public class PreviewActivity extends Activity implements View.OnClickListener {
     private int mSelectPos;
     private List<Image> mAllImageList = Collections.synchronizedList(new ArrayList<Image>());;
     private ImageView mBackView;
+    private View mRecycleFL;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,7 +65,11 @@ public class PreviewActivity extends Activity implements View.OnClickListener {
         mBackView = (ImageView) findViewById(R.id.back_preview);
         mViewPager = (ViewPager) findViewById(R.id.viewpager_preview);
         findViewById(R.id.top_tab).setAlpha(0.95f);
-        findViewById(R.id.recycle_fl).setAlpha(0.95f);
+        mRecycleFL = findViewById(R.id.recycle_fl);
+        mRecycleFL.setAlpha(0.95f);
+        if (mSelectPosList!=null&&mSelectPosList.size()>0){
+            mRecycleFL.setVisibility(View.VISIBLE);
+        }
         findViewById(R.id.bottom_tab).setAlpha(0.95f);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycle_preview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -164,6 +169,11 @@ public class PreviewActivity extends Activity implements View.OnClickListener {
                     photoChoose.setNumber(mSelectPosList.size());
                     photoChoose.setChoose(true);
                     mAdapter.setSelectedItem(mSelectPos);
+                }
+                if (mSelectPosList.size()>0&&mSelectPosList!=null){
+                    mRecycleFL.setVisibility(View.VISIBLE);
+                }else {
+                    mRecycleFL.setVisibility(View.GONE);
                 }
                 mAdapter.notifyDataSetChanged();
                 break;
