@@ -16,6 +16,7 @@ import java.util.List;
 
 import wangbin.graduation.com.camera2demo.Adapter.ViewPagerAdapter;
 import wangbin.graduation.com.camera2demo.utils.PermissionUtil;
+import wangbin.graduation.com.camera2demo.view.ViewPagerIndicator;
 
 public class MainActivity extends FragmentActivity {
 
@@ -24,6 +25,8 @@ public class MainActivity extends FragmentActivity {
     private Camera2Fragment mCamera2Fragment;
     private List<Fragment> mFragmentList = new ArrayList<>();
     private ViewPagerAdapter mAdapter;
+    private ViewPagerIndicator indicator;
+    List<String> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,12 @@ public class MainActivity extends FragmentActivity {
 
     private void initView() {
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        indicator = findViewById(R.id.indicator);
+        list.add("相册");
+        list.add("拍照");
+        indicator.setTextArray(list);
+        indicator.setViewPager(mViewPager);
+        indicator.setCurrentItem(1);
     }
 
     public void setFullscreen() {

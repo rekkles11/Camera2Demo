@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -10,5 +10,11 @@
         android:layout_height="match_parent">
 
     </android.support.v4.view.ViewPager>
-</LinearLayout>
+
+    <wangbin.graduation.com.camera2demo.view.ViewPagerIndicator
+        android:layout_gravity="bottom"
+        android:id="@+id/indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"></wangbin.graduation.com.camera2demo.view.ViewPagerIndicator>
+</FrameLayout>
 
