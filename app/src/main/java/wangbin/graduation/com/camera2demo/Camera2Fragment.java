@@ -189,6 +189,7 @@ public class Camera2Fragment extends Fragment
             SurfaceTexture texture = mTextureView.getSurfaceTexture();
             assert texture != null;
             texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+            //texture.setDefaultBufferSize(1080, 1920);
             mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
             List<Surface> surfaces = new ArrayList<>();
 
@@ -783,6 +784,7 @@ public class Camera2Fragment extends Fragment
     }
 
     private static Size chooseVideoSize(Size[] choices) {
+
         for (Size size : choices) {
             if (size.getWidth() == size.getHeight() * 4 / 3 && size.getWidth() <= 1080) {
                 return size;

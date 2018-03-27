@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.view.WindowManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.List;
 import wangbin.graduation.com.camera2demo.Adapter.ViewPagerAdapter;
 import wangbin.graduation.com.camera2demo.utils.PermissionUtil;
 
-public class MainActivity extends FragmentActivity  {
+public class MainActivity extends FragmentActivity {
 
     private ViewPager mViewPager;
     private AlbumFragment mAlbumFragment;
@@ -25,19 +27,37 @@ public class MainActivity extends FragmentActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setFullscreen();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        if (PermissionUtil.checkAndOpenPermissions(this,Camera2Fragment.VIDEO_PERMISSIONS))
+        if (PermissionUtil.checkAndOpenPermissions(this, Camera2Fragment.VIDEO_PERMISSIONS))
             init();
     }
-    private void initView(){
-        mViewPager = (ViewPager)findViewById(R.id.viewpager);
+
+    private void initView() {
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
     }
-    private void init(){
-        mAdapter = new ViewPagerAdapter(this.getFragmentManager(),mFragmentList);
+
+    public void setFullscreen() {
+        int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                |View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                |View.SYSTEM_UI_FLAG_FULLSCREEN;
+        // hide status bar
+        if (android.os.Build.VERSION.SDK_INT >= 19) {
+            uiFlags |= 0x00001000;
+        } else {
+            uiFlags |= View.SYSTEM_UI_FLAG_LOW_PROFILE;
+        }
+        getWindow().getDecorView().setSystemUiVisibility(uiFlags);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                                  WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏s
+    }
+
+    private void init() {
+        mAdapter = new ViewPagerAdapter(this.getFragmentManager(), mFragmentList);
         mCamera2Fragment = Camera2Fragment.newInstance();
-        mAlbumFragment =  AlbumFragment.newInstance();
+        mAlbumFragment = AlbumFragment.newInstance();
         mFragmentList.add(mAlbumFragment);
         mFragmentList.add(mCamera2Fragment);
         mViewPager.setAdapter(mAdapter);
@@ -47,9 +67,9 @@ public class MainActivity extends FragmentActivity  {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (PermissionUtil.onRequestPermissionsResult(requestCode,permissions,grantResults).size()>0) {
+        if (PermissionUtil.onRequestPermissionsResult(requestCode, permissions, grantResults).size() > 0) {
             PermissionUtil.gotoSystemSetting(this);
-        }else {
+        } else {
             init();
         }
     }

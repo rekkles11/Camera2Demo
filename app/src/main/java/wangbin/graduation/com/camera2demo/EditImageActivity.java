@@ -66,6 +66,7 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
     private String TEXT = "text";
     private String SCRIBBLE = "scribble";
     private String BACK ="back";
+    private String OK ="ok";
     //图片大小
     private int mImageWidth = 0;
     private int mImageHeight = 0;
@@ -128,7 +129,7 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
         }
         getWindow().getDecorView().setSystemUiVisibility(uiFlags);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                                  WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏s
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏s
     }
 
     private void initView() {
@@ -219,29 +220,29 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
     private void disPlayImage() {
 
         Glide.with(this)
-             .load(mImage)
-             .listener(new RequestListener<String, GlideDrawable>() {
-                 @Override
-                 public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                     return false;
-                 }
+                .load(mImage)
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
 
-                 @Override
-                 public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                     mImageWidth = resource.getIntrinsicWidth();
-                     mImageHeight = resource.getIntrinsicHeight();
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        mImageWidth = resource.getIntrinsicWidth();
+                        mImageHeight = resource.getIntrinsicHeight();
 
-                     Bitmap.Config config = resource.getOpacity() != PixelFormat.OPAQUE
-                             ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
-                     mBitmap = Bitmap.createBitmap(mImageWidth, mImageHeight, config);
-                     Canvas canvas = new Canvas(mBitmap);
-                     resource.setBounds(0, 0, mImageWidth, mImageHeight);
-                     resource.draw(canvas);
-                     mEditImage.setBitmapXY(mBitmap);
-                     mEditImage.setOriginalBitmap(mBitmap);
-                     return false;
-                 }
-             }).into(mEditImage);
+                        Bitmap.Config config = resource.getOpacity() != PixelFormat.OPAQUE
+                                ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+                        mBitmap = Bitmap.createBitmap(mImageWidth, mImageHeight, config);
+                        Canvas canvas = new Canvas(mBitmap);
+                        resource.setBounds(0, 0, mImageWidth, mImageHeight);
+                        resource.draw(canvas);
+                        mEditImage.setBitmapXY(mBitmap);
+                        mEditImage.setOriginalBitmap(mBitmap);
+                        return false;
+                    }
+                }).into(mEditImage);
     }
 
     @Override
@@ -268,6 +269,7 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
                 undo();
                 break;
             case R.id.Ok_edit_image:
+                mTag = OK;
                 back();
                 break;
             case R.id.decal1_fl:
@@ -364,10 +366,10 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
         } else if (mTag.equals(TEXT)) {
             closeText();
             mTag ="";
-        } else if (mTag.equals(BACK)){
-            this.finish();
-        }else {
+        } else if (mTag.equals(OK)){
             dealBitmap();
+        }else {
+            finish();
         }
     }
 
@@ -407,7 +409,7 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
     private void trashscaleAnimation(float before, float after) {
         mTrashCan.clearAnimation();
         ScaleAnimation animation = new ScaleAnimation(before, after, before, after,
-                                                      Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         animation.setDuration(200);
         animation.setFillAfter(true);
         mTrashCan.setAnimation(animation);
@@ -417,7 +419,7 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
 
     private void bottomscaleAnimation(float before, float after) {
         ScaleAnimation animation = new ScaleAnimation(before, after, before, after,
-                                                      Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         animation.setDuration(200);
         animation.setFillAfter(true);
         mBottomTab.setAnimation(animation);
@@ -478,6 +480,7 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK){
+            mTag = BACK;
             back();
             return true;
         }else {

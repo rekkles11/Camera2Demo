@@ -23,6 +23,7 @@ public class PreviewPagerAdapter extends PagerAdapter {
 
     private Context mContext;
     private List<Image> mImageList;
+    private int mNewPath = -1;
     public PreviewPagerAdapter(Context context,List<Image> list){
         this.mContext = context;
         this.mImageList = list;
@@ -31,6 +32,17 @@ public class PreviewPagerAdapter extends PagerAdapter {
     @Override
     public int getCount() {
         return mImageList == null?0:mImageList.size();
+    }
+
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        View view = (View)object;
+        if (mNewPath == (int)view.getTag()){
+            mNewPath = -1;
+            return POSITION_NONE;
+        }else{
+            return POSITION_UNCHANGED;
+        }
     }
 
     @Override
@@ -50,11 +62,15 @@ public class PreviewPagerAdapter extends PagerAdapter {
                 .load(mImageList.get(position).getPath())
                 .into(imageView);
         container.addView(imageView);
+        imageView.setTag(position);
         return imageView;
     }
 
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-        return view == (View) object;
+        return  view == (View) object;
+    }
+    public void setIsNewPath(int newPath){
+        this.mNewPath = newPath;
     }
 }
