@@ -35,7 +35,6 @@ public class PreviewActivity extends Activity implements View.OnClickListener {
     private ArrayList<Integer> mSelectPosList = new ArrayList<>();
     private TextView mEdit;
     private PicRecycleAdapter mAdapter;
-    private String mPrePath;
     private PreviewPagerAdapter mPagerAdapter;
     private int mSelectPos;
     private List<Image> mAllImageList = Collections.synchronizedList(new ArrayList<Image>());;
@@ -130,17 +129,6 @@ public class PreviewActivity extends Activity implements View.OnClickListener {
             }
             String path = data.getStringExtra("imagePath");
             mAllImageList.get(mSelectPos).setPath(path);
-//            Image image = new Image();
-//            image.setName(path);
-//            image.setPath(path);
-//            int index = 0;
-//            for (int i = 0; i < mSelectPosList.size(); i++) {
-//                mSelectPosList.set(i, mSelectPosList.get(i) + 1);
-//            }
-//            mSelectPosList.add(index, index);
-//            mAllImageList.add(index, image);
-//            mSelectPos = index;
-//            mAdapter.setSelectedItem(index);
             mPagerAdapter.setIsNewPath(mSelectPos);
             mPagerAdapter.notifyDataSetChanged();
             mViewPager.setCurrentItem(mSelectPos);

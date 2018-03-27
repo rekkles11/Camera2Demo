@@ -10,9 +10,8 @@
         android:layout_height="match_parent"/>
 
 
-    <ImageView
+    <wangbin.graduation.com.camera2demo.view.CircleView
         android:id="@+id/video"
-        android:src="@drawable/button"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="center|bottom"
