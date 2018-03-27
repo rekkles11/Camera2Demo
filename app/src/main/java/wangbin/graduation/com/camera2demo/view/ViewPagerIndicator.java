@@ -69,7 +69,7 @@ public class ViewPagerIndicator extends ViewGroup implements ViewPager.OnPageCha
         addView(recyclerView);
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setColor(Color.BLACK);
+        mPaint.setColor(Color.WHITE);
         mPaint.setStrokeWidth(indicatorWidth);
 
         itemWidth = DensityUtil.dip2px(getContext(), 60);
@@ -191,7 +191,7 @@ public class ViewPagerIndicator extends ViewGroup implements ViewPager.OnPageCha
             lastItem = currentItem;
             //            offsetWidth = currentItem * itemWidth + itemWidth / 2;
             Log.e("infoo", "onPageScrollStateChanged  v == " + offsetWidth);
-            //            layoutRecyclerView();
+                        layoutRecyclerView();
         }
 
     }
