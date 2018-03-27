@@ -61,12 +61,12 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
     private ImageView mUndo;
     private ImageView mTrashCan;
     private String mTag = "";
-    private String FILTER = "fileter";
     private String DECAL = "decal";
     private String TEXT = "text";
     private String SCRIBBLE = "scribble";
     private String BACK ="back";
     private String OK ="ok";
+    private String topBar =BACK;
     //图片大小
     private int mImageWidth = 0;
     private int mImageHeight = 0;
@@ -249,7 +249,6 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.filter_fl:
-                mTag = FILTER;
                 mBitmap = toBlackAndWhite(mBitmap);
                 break;
             case R.id.decal_fl:
@@ -262,14 +261,14 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
                 startScribble();
                 break;
             case R.id.cross_edit_image:
-                mTag = BACK;
+                topBar = BACK;
                 back();
                 break;
             case R.id.undo_edit_image:
                 undo();
                 break;
             case R.id.Ok_edit_image:
-                mTag = OK;
+                topBar = OK;
                 back();
                 break;
             case R.id.decal1_fl:
@@ -295,6 +294,10 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
     //撤销笔画
     private void undo() {
         mEditImage.undoBitmap();
+    }
+    private void cancle(){
+        mEditImage.setImageBitmap(mBitmap);
+        mEditImage.setOriginalBitmap(mBitmap);
     }
 
     private void dealBitmap() {
@@ -347,29 +350,40 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
         mEditText.setText("");
     }
 
-    private void closeText() {
+    private void closeText(Boolean b) {
         relativeLayout.setVisibility(View.GONE);
         mBottomTab.setVisibility(View.VISIBLE);
         bottomTabAnimation(0, 1.0f);
-        mEditImage.addText(mEditText.getText().toString());
+        if (b) {
+            mEditImage.addText(mEditText.getText().toString());
+        }
         InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
     }
 
     private void back() {
         if (mTag.equals(SCRIBBLE)) {
+            if (topBar.equals(BACK)) {
+                cancle();
+            }
             closeScribble();
-            mTag ="";
+            mTag = "";
         } else if (mTag.equals(DECAL)) {
             closeDecal();
-            mTag ="";
+            mTag = "";
         } else if (mTag.equals(TEXT)) {
-            closeText();
-            mTag ="";
-        } else if (mTag.equals(OK)){
-            dealBitmap();
-        }else {
-            finish();
+            if (topBar.equals(OK)){
+                closeText(true);
+            }else if (topBar.equals(BACK)){
+                closeText(false);
+            }
+            mTag = "";
+        }else if (mTag.equals("")){
+            if (topBar.equals(OK)){
+                dealBitmap();
+            }else if(topBar.equals(BACK)){
+                finish();
+            }
         }
     }
 
@@ -392,6 +406,7 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
         mTag = SCRIBBLE;
         bottomTabAnimation(1.0f, 0);
         mBottomTab.setVisibility(View.GONE);
+        mUndo.setVisibility(View.VISIBLE);
         mColorChooseView.setVisibility(View.VISIBLE);
         mColorChooseView.showAnimator();
         mEditImage.setIntoScribble(true);
@@ -401,6 +416,7 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
     private void closeScribble() {
         mColorChooseView.setVisibility(View.GONE);
         mBottomTab.setVisibility(View.VISIBLE);
+        mUndo.setVisibility(View.GONE);
         bottomTabAnimation(0, 1.0f);
         mEditImage.setIntoScribble(false);
         mBitmap = mEditImage.getNewBitmap();
@@ -480,7 +496,7 @@ public class EditImageActivity extends Activity implements View.OnClickListener 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK){
-            mTag = BACK;
+            topBar = BACK;
             back();
             return true;
         }else {
