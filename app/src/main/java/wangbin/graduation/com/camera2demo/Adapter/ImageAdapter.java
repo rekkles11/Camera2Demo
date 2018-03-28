@@ -139,6 +139,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         public ViewHolder(View itemView) {
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.pic_image_adapter);
+
             ViewGroup.LayoutParams layoutParams = mImageView.getLayoutParams();
             layoutParams.width = mItemW;
             layoutParams.height = mItemW;
