@@ -30,8 +30,8 @@ public class ViewPagerIndicator extends ViewGroup implements ViewPager.OnPageCha
 
     RecyclerView recyclerView;
     ViewPager viewPager;
-    private int indicatorHeight = 30;
-    private int indicatorWidth = 15;
+    private int indicatorHeight = 16;
+    private int indicatorWidth = 12;
     private int leftMargin;
     private int itemWidth;
     private int currentItem = 0;
@@ -43,6 +43,7 @@ public class ViewPagerIndicator extends ViewGroup implements ViewPager.OnPageCha
     boolean flag = false;
     private float screenWidth;
     private Paint mPaint;
+    private Adapter adapter;
 
     private List<String> textArray = new ArrayList<>();
 
@@ -62,7 +63,8 @@ public class ViewPagerIndicator extends ViewGroup implements ViewPager.OnPageCha
     private void init() {
         setWillNotDraw(false);
         recyclerView = new RecyclerView(getContext());
-        recyclerView.setAdapter(new Adapter());
+        adapter = new Adapter();
+        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         recyclerView.setLayoutParams(params);
@@ -114,7 +116,6 @@ public class ViewPagerIndicator extends ViewGroup implements ViewPager.OnPageCha
 
     public void setCurrentItem(int item) {
         lastItem = currentItem = item;
-
     }
 
     @Override
@@ -189,9 +190,10 @@ public class ViewPagerIndicator extends ViewGroup implements ViewPager.OnPageCha
             lastOffSet = -1;
             flag = false;
             lastItem = currentItem;
+            adapter.notifyDataSetChanged();
             //            offsetWidth = currentItem * itemWidth + itemWidth / 2;
             Log.e("infoo", "onPageScrollStateChanged  v == " + offsetWidth);
-                        layoutRecyclerView();
+            layoutRecyclerView();
         }
 
     }
@@ -205,6 +207,11 @@ public class ViewPagerIndicator extends ViewGroup implements ViewPager.OnPageCha
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
+            if (currentItem == position) {
+                holder.textView.setTextColor(Color.WHITE);
+            } else {
+                holder.textView.setTextColor(Color.parseColor("#E3E3E3"));
+            }
             holder.textView.setText(textArray.get(position));
         }
 

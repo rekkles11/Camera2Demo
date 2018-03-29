@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 import wangbin.graduation.com.camera2demo.Adapter.ViewPagerAdapter;
 import wangbin.graduation.com.camera2demo.utils.PermissionUtil;
+import wangbin.graduation.com.camera2demo.utils.VideoCutUtils;
 import wangbin.graduation.com.camera2demo.view.ViewPagerIndicator;
 
 public class MainActivity extends FragmentActivity {
@@ -30,6 +32,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        VideoCutUtils.trimVideo(this, "/storage/emulated/0/Pictures/Screenshots/SVID_20170809_054411.mp4", "/storage/emulated/0/Pictures/videocut/", 0, 5000);
         setFullscreen();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
