@@ -153,6 +153,7 @@ public class Camera2Fragment extends Fragment
         mButtonVideo.setOnClickListener(this);
         mActivity = getActivity();
         mContext = getContext();
+        mFile = new File(getPicFilePath(mContext));
         ViewTreeObserver vto = view.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -245,8 +246,12 @@ public class Camera2Fragment extends Fragment
 
     private void stopRecordingVideo(Boolean b) {
         mIsRecordingVideo = false;
-        mMediaRecorder.stop();
-        mMediaRecorder.reset();
+        try {
+            mMediaRecorder.stop();
+            mMediaRecorder.reset();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (b) {
             Activity activity = getActivity();
             if (null != activity) {
@@ -444,14 +449,14 @@ public class Camera2Fragment extends Fragment
         public void onDisconnected(@NonNull CameraDevice cameraDevice) {
             mCameraOpenCloseLock.release();
             cameraDevice.close();
-            mCameraDevice = null;
+//            mCameraDevice = null;
         }
 
         @Override
         public void onError(@NonNull CameraDevice cameraDevice, int error) {
             mCameraOpenCloseLock.release();
             cameraDevice.close();
-            mCameraDevice = null;
+//            mCameraDevice = null;
             Activity activity = getActivity();
             if (null != activity) {
                 activity.finish();
@@ -761,7 +766,6 @@ public class Camera2Fragment extends Fragment
 
         @Override
         public void onImageAvailable(ImageReader reader) {
-            mFile = new File(getPicFilePath(mContext));
             mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
         }
 
