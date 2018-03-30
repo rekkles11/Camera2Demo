@@ -75,7 +75,7 @@ public class CircleView extends View {
         mPaint.setDither(true);
         mPaint.setAntiAlias(true);
         mValueAnimator = ValueAnimator.ofFloat(0,360);
-        mValueAnimator.setDuration(30000);
+        mValueAnimator.setDuration(20000);
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
