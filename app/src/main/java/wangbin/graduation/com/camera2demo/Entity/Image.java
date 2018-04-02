@@ -9,17 +9,21 @@ import java.io.Serializable;
  * Created by momo on 2018/3/9.
  */
 
-public class Image implements Parcelable{
+public class Image implements Parcelable {
     private String mPath;
     private String mName;
+    private boolean isVideo;
+    private String duration;
 
-    public Image(){
+    public Image() {
 
     }
 
     protected Image(Parcel in) {
         mPath = in.readString();
         mName = in.readString();
+        duration = in.readString();
+        isVideo = Boolean.parseBoolean(in.readString());
     }
 
     public static final Creator<Image> CREATOR = new Creator<Image>() {
@@ -50,13 +54,28 @@ public class Image implements Parcelable{
         mName = name;
     }
 
+    public boolean isVideo() {
+        return isVideo;
+    }
+
+    public void setVideo(boolean video) {
+        isVideo = video;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
 
     @Override
     public boolean equals(Object obj) {
         try {
             Image other = (Image) obj;
             return this.getPath().equalsIgnoreCase(other.getPath());
-        }catch (ClassCastException e){
+        } catch (ClassCastException e) {
             e.printStackTrace();
         }
         return super.equals(obj);
@@ -71,5 +90,7 @@ public class Image implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mPath);
         dest.writeString(mName);
+        dest.writeString(duration);
+        dest.writeString(String.valueOf(isVideo));
     }
 }

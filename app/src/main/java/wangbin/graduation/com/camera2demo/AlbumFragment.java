@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.content.CursorLoader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +33,15 @@ import wangbin.graduation.com.camera2demo.Adapter.ImageAdapter;
 import wangbin.graduation.com.camera2demo.Entity.Folder;
 import wangbin.graduation.com.camera2demo.Entity.Image;
 import wangbin.graduation.com.camera2demo.utils.TopPopup;
+import wangbin.graduation.com.camera2demo.utils.VideoCutUtils;
 
 /**
  * Created by momo on 2018/3/8.
  */
 
 public class AlbumFragment extends Fragment implements View.OnClickListener {
+
+    private static final Uri QUERY_URI = MediaStore.Files.getContentUri("external");
 
     private View mView;
     private TopPopup mTopPopup;
@@ -156,18 +161,44 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
                         MediaStore.Images.Media.DATE_ADDED,
                         MediaStore.Images.Media._ID};
 
+                private final String[] PROJECTION = {
+                        MediaStore.Files.FileColumns._ID,
+                        MediaStore.MediaColumns.SIZE,
+                        MediaStore.MediaColumns.DATE_ADDED,
+                        MediaStore.MediaColumns.DATA,
+                        MediaStore.MediaColumns.MIME_TYPE,
+                        "bucket_id",
+                        "bucket_display_name",
+                        "duration",
+                        MediaStore.MediaColumns.WIDTH,
+                        MediaStore.MediaColumns.HEIGHT};
+
                 @Override
                 public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-                    CursorLoader cursorLoader = new CursorLoader(getActivity(),
-                                                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
-                                                                 null, null, IMAGE_PROJECTION[2] + " DESC");
-                    return cursorLoader;
 
+                    //                    String where = MediaStore.Images.Media.MIME_TYPE + "=? or "
+                    //                            + MediaStore.Images.Media.MIME_TYPE + "=? or "
+                    //                            + MediaStore.Images.Media.MIME_TYPE + "=?";
+                    //                    String where = MediaStore.Images.Media.MIME_TYPE + "=? or "
+                    //                            + MediaStore.Images.Media.MIME_TYPE + "=? or "
+                    //                            + MediaStore.Images.Media.MIME_TYPE + "=?";
+                    //
+                    //                    String[] whereArgs = {"image/jpeg", "image/png", "image/jpg"};
+                    String selection = "("
+                            + MediaStore.Files.FileColumns.MEDIA_TYPE + "=? OR "
+                            + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?) AND "
+                            + MediaStore.MediaColumns.SIZE + ">0";
+                    String[] selectionArgs = new String[]{
+                            "" + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE,
+                            "" + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO};
+                    CursorLoader cursorLoader = new CursorLoader(getActivity(),
+                                                                 QUERY_URI, PROJECTION,
+                                                                 selection, selectionArgs, MediaStore.Files.FileColumns.DATE_ADDED + " DESC");
+                    return cursorLoader;
                 }
 
                 @Override
                 public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-
                     if (cursor != null) {
                         int i = 0;
                         int count = cursor.getCount();
@@ -175,11 +206,17 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
                             List<Image> tempImageList = new ArrayList<>();
                             cursor.moveToFirst();
                             do {
-                                String path = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_PROJECTION[0]));
-                                String name = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_PROJECTION[1]));
+                                String path = cursor.getString(cursor.getColumnIndexOrThrow(PROJECTION[3]));
+                                String name = cursor.getString(cursor.getColumnIndexOrThrow(PROJECTION[6]));
                                 Image image = new Image();
                                 image.setPath(path);
                                 image.setName(name);
+                                if (path.endsWith(".mp4")) {
+                                    Log.e("infoo", "name=" + name + " path=" + path);
+                                    image.setVideo(true);
+                                    image.setDuration(VideoCutUtils.convertSecondsToTime(path));
+                                }
+                               // Log.e("infoo", "name = " + name + " path = " + path);
                                 tempImageList.add(image);
 
                                 if (!hasFolderGened) {
@@ -224,5 +261,4 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
 
                 }
             };
-
 }
