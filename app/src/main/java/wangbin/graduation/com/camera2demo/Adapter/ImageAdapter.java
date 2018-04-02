@@ -19,11 +19,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import wangbin.graduation.com.camera2demo.EditVideoActivity;
 import wangbin.graduation.com.camera2demo.Entity.Folder;
 import wangbin.graduation.com.camera2demo.Entity.Image;
 import wangbin.graduation.com.camera2demo.PreviewActivity;
 import wangbin.graduation.com.camera2demo.R;
 import wangbin.graduation.com.camera2demo.view.CircleSelectView;
+import wangbin.graduation.com.camera2demo.view.EditVideoView;
 
 /**
  * Created by momo on 2018/3/12.
@@ -65,10 +67,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         holder.mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext, PreviewActivity.class);
-                intent.putExtra("allImageList", (Serializable) mAllImageList);
-                intent.putExtra("selectPos", mPreFolderImages + position);
-                ((Activity) mContext).startActivity(intent);
+                if (mImageList.get(position).isVideo()){
+
+                    Intent intent = new Intent(mContext, EditVideoActivity.class);
+                    intent.putExtra("videoPath", mImageList.get(position).getPath());
+                    ((Activity) mContext).startActivity(intent);
+                }else {
+                    Intent intent = new Intent(mContext, PreviewActivity.class);
+                    intent.putExtra("allImageList", (Serializable) mAllImageList);
+                    intent.putExtra("selectPos", mPreFolderImages + position);
+                    ((Activity) mContext).startActivity(intent);
+                }
             }
         });
 

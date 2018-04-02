@@ -13,10 +13,11 @@ import wangbin.graduation.com.camera2demo.view.EditVideoView;
 public class EditVideoActivity extends Activity {
 
     private EditVideoView mEditVideoView;
-
+    public static String mVideoPath;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mVideoPath = getIntent().getStringExtra("videoPath");
         setContentView(R.layout.activity_edit_video);
         mEditVideoView = (EditVideoView)findViewById(R.id.view_edit_video);
     }

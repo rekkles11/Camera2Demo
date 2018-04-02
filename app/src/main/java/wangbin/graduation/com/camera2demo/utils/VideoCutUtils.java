@@ -59,7 +59,7 @@ public class VideoCutUtils {
         outputFile = outputFile + cutFileName;
         String start = convertSecondsToTime(startMS / 1000);
         String duration = convertSecondsToTime((endMs - startMS) / 1000);
-        String cmd = "-ss " + start + " -t " + duration + " -i " + inputFile + "  -vcodec copy -acodec copy " + outputFile;
+        String cmd = "-ss " + start + " -t " + duration + " -i " + inputFile + " -vcodec copy -acodec copy " + outputFile;
         String[] command = cmd.split(" ");
         try {
             final String finalOutputFile = outputFile;

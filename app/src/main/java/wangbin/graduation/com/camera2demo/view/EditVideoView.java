@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import wangbin.graduation.com.camera2demo.Adapter.ThumbImageAdapter;
+import wangbin.graduation.com.camera2demo.EditVideoActivity;
 import wangbin.graduation.com.camera2demo.R;
 import wangbin.graduation.com.camera2demo.utils.VideoCutUtils;
 
@@ -81,6 +82,7 @@ public class EditVideoView extends FrameLayout implements View.OnClickListener{
     }
 
     private void init(Context context) {
+        path = EditVideoActivity.mVideoPath;
         this.mContext = context;
         LayoutInflater.from(mContext).inflate(R.layout.view_edit_video,this,true);
         mSeekBarView = (SeekBarView) findViewById(R.id.view_seek_bar);
@@ -100,6 +102,10 @@ public class EditVideoView extends FrameLayout implements View.OnClickListener{
         mSeekBarView.setOnUpOrDownListener(mOnUpOrDownListener);
         mSeekBar.setEnabled(false);
         DealVideo();
+    }
+
+    public void setVideoPath(String path){
+        this.path = path;
     }
     private void setSeekBarMaxTime(int time){
         if (time>10000){
@@ -303,7 +309,7 @@ public class EditVideoView extends FrameLayout implements View.OnClickListener{
                 String outPath =
                         "/storage/emulated/0/immomo/MOMO/";
                 Log.e("cut----",mVideoStartTime+"  "+mVideoEndTime);
-//                VideoCutUtils.trimVideo(mContext,path,outPath,mVideoStartTime,mVideoEndTime);
+                VideoCutUtils.trimVideo(mContext,path,outPath,mVideoStartTime,mVideoEndTime);
                 break;
             case R.id.cancel_edit_video:
                 break;
