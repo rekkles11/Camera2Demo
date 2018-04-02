@@ -125,6 +125,7 @@ public class Camera2Fragment extends Fragment
     };
 
     private int mSensorOrientation;
+
     static {
         DEFAULT_ORIENTATIONS.append(Surface.ROTATION_0, 90);
         DEFAULT_ORIENTATIONS.append(Surface.ROTATION_90, 0);
@@ -160,7 +161,7 @@ public class Camera2Fragment extends Fragment
             public void onGlobalLayout() {
                 mButtonWidth = mButtonVideo.getWidth();
                 mButtonHeight = mButtonVideo.getHeight();
-                mButtonVideo.setCircleCentere(mButtonWidth,mButtonHeight);
+                mButtonVideo.setCircleCentere(mButtonWidth, mButtonHeight);
             }
         });
         mButtonVideo.setOnTakePictureListener(new CircleView.OnTakePictureListener() {
@@ -168,7 +169,7 @@ public class Camera2Fragment extends Fragment
             public void takePic(Boolean isTakePic) {
                 if (isTakePic) {
                     takePicture();
-                }else {
+                } else {
                     startRecordingVideo();
                 }
             }
@@ -180,10 +181,10 @@ public class Camera2Fragment extends Fragment
                     if (mIsRecordingVideo) {
                         stopRecordingVideo(isOk);
                     }
-                }else {
-                    Toast.makeText(mActivity,"录制视频至少需要2s",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mActivity, "录制视频至少需要2s", Toast.LENGTH_SHORT).show();
                     if (mIsRecordingVideo)
-                       stopRecordingVideo(isOk);
+                        stopRecordingVideo(isOk);
                 }
                 mButtonVideo.reset();
             }
@@ -195,7 +196,7 @@ public class Camera2Fragment extends Fragment
         super.onActivityCreated(savedInstanceState);
     }
 
-    private void startRecordingVideo(){
+    private void startRecordingVideo() {
         if (null == mCameraDevice || !mTextureView.isAvailable() || null == mPreviewSize) {
             return;
         }
@@ -204,7 +205,7 @@ public class Camera2Fragment extends Fragment
             setUpMediaRecorder();
             SurfaceTexture texture = mTextureView.getSurfaceTexture();
             assert texture != null;
-            texture.setDefaultBufferSize(mPreviewSize.getWidth(),mPreviewSize.getHeight());
+            texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
             mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
             List<Surface> surfaces = new ArrayList<>();
 
@@ -225,7 +226,7 @@ public class Camera2Fragment extends Fragment
                         @Override
                         public void run() {
                             mIsRecordingVideo = true;
-                            if (mMediaRecorder!= null)
+                            if (mMediaRecorder != null)
                                 mMediaRecorder.start();
                         }
                     });
@@ -235,11 +236,9 @@ public class Camera2Fragment extends Fragment
                 public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
 
                 }
-            },mBackgroundHandler);
+            }, mBackgroundHandler);
 
-
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -247,20 +246,23 @@ public class Camera2Fragment extends Fragment
     private void stopRecordingVideo(Boolean b) {
         mIsRecordingVideo = false;
         try {
-            mMediaRecorder.stop();
-            mMediaRecorder.reset();
-        } catch (Exception e) {
+            mPreviewSession.stopRepeating();
+            mPreviewSession.abortCaptures();
+        } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+        mMediaRecorder.stop();
+        mMediaRecorder.reset();
+
         if (b) {
             Activity activity = getActivity();
             if (null != activity) {
                 Toast.makeText(activity, "Video saved: " + mNextVideoAbsolutePath,
-                        Toast.LENGTH_SHORT).show();
+                               Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Video saved: " + mNextVideoAbsolutePath);
             }
-        }else {
-            if (mNextVideoAbsolutePath!=null) {
+        } else {
+            if (mNextVideoAbsolutePath != null) {
                 File file = new File(mNextVideoAbsolutePath);
                 if (file.exists()) {
                     file.delete();
@@ -271,8 +273,7 @@ public class Camera2Fragment extends Fragment
         createCameraPreviewSession();
     }
 
-
-        //设置录制参数
+    //设置录制参数
 
     private void setUpMediaRecorder() throws IOException {
         final Activity activity = getActivity();
@@ -302,13 +303,15 @@ public class Camera2Fragment extends Fragment
         }
         mMediaRecorder.prepare();
     }
+
     private String getVideoFilePath(Context context) {
-        final File dir =new File("/sdcard/Pictures/");
+        final File dir = new File("/sdcard/Pictures/");
         return (dir == null ? "" : (dir.getAbsolutePath() + "/"))
                 + System.currentTimeMillis() + ".mp4";
     }
+
     private String getPicFilePath(Context context) {
-        final File dir =new File("/sdcard/Pictures/");
+        final File dir = new File("/sdcard/Pictures/");
         return (dir == null ? "" : (dir.getAbsolutePath() + "/"))
                 + System.currentTimeMillis() + ".jpg";
     }
@@ -425,6 +428,7 @@ public class Camera2Fragment extends Fragment
             PermissionUtil.gotoSystemSetting(getActivity());
         }
     }
+
     private boolean hasPermissionsGranted(String[] permissions) {
         for (String permission : permissions) {
             if (ActivityCompat.checkSelfPermission(getActivity(), permission)

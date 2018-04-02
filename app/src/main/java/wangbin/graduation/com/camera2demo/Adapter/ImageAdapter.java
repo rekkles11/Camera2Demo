@@ -3,14 +3,18 @@ package wangbin.graduation.com.camera2demo.Adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +72,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             }
         });
 
+        if (mImageList.get(position).isVideo()) {
+            holder.mTv.setText(mImageList.get(position).getDuration());
+            holder.mSelectImage.setVisibility(View.GONE);
+        } else {
+            holder.mTv.setText("");
+            holder.mSelectImage.setVisibility(View.VISIBLE);
+        }
+
         int num = hasSelected(position);
         if (num > 0) {
             holder.mSelectImage.setNumber(num);
@@ -84,7 +96,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                     ((CircleSelectView) view).setChoose(false);
                     notifyDataSetChanged();
                 } else {
-                    if (mSelectList.size()>=9){
+                    if (mSelectList.size() >= 9) {
                         return;
                     }
                     ((CircleSelectView) view).setNumber(mSelectList.size() + 1);
@@ -135,11 +147,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView mImageView;
         private CircleSelectView mSelectImage;
+        private TextView mTv;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mImageView = (ImageView) itemView.findViewById(R.id.pic_image_adapter);
-
+            mTv = itemView.findViewById(R.id.tv);
             ViewGroup.LayoutParams layoutParams = mImageView.getLayoutParams();
             layoutParams.width = mItemW;
             layoutParams.height = mItemW;

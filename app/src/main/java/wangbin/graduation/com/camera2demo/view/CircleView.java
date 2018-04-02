@@ -49,6 +49,12 @@ public class CircleView extends View {
         init();
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+
+    }
+
     public interface OnRecordOverListener{
         void over(Boolean isOk);
     }
@@ -151,6 +157,7 @@ public class CircleView extends View {
                             if (a == MotionEvent.ACTION_UP) {
                                 Log.e("action","post - action up");
                                 mOnTakePictureListener.takePic(true);
+                                mStartRecord=false;
 
                             } else if (a == MotionEvent.ACTION_MOVE){
                                 Log.e("action","post - action move");
@@ -161,7 +168,7 @@ public class CircleView extends View {
                             isDown = false;
 
                         }
-                    }, 100);
+                    }, 500);
                 }
                 break;
             case MotionEvent.ACTION_UP:

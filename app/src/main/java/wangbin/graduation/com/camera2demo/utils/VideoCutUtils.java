@@ -59,7 +59,7 @@ public class VideoCutUtils {
         outputFile = outputFile + cutFileName;
         String start = convertSecondsToTime(startMS / 1000);
         String duration = convertSecondsToTime((endMs - startMS) / 1000);
-        String cmd = "-ss " + start + " -t " + duration + " -i " + inputFile + " -vcodec copy -acodec copy " + outputFile;
+        String cmd = "-ss " + start + " -t " + duration + " -i " + inputFile + "  -vcodec copy -acodec copy " + outputFile;
         String[] command = cmd.split(" ");
         try {
             final String finalOutputFile = outputFile;
@@ -133,6 +133,20 @@ public class VideoCutUtils {
             });
         } catch (FFmpegCommandAlreadyRunningException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static String convertSecondsToTime(String path) {
+        MediaMetadataRetriever m = new MediaMetadataRetriever();
+        try {
+            m.setDataSource(path);
+            long duration = Long.valueOf(m.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+            return convertSecondsToTime(duration / 1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "00:00";
+        } finally {
+            m.release();
         }
     }
 

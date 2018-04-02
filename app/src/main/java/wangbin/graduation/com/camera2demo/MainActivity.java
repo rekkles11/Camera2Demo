@@ -32,7 +32,8 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        VideoCutUtils.trimVideo(this, "/storage/emulated/0/Pictures/Screenshots/SVID_20170809_054411.mp4", "/storage/emulated/0/Pictures/videocut/", 0, 5000);
+        // VideoCutUtils.trimVideo(this, "/storage/emulated/0/Pictures/Screenshots/SVID_20170809_054411.mp4", "/storage/emulated/0/Pictures/videocut/", 0, 5000);
+       // Log.e("infoo",VideoCutUtils.convertSecondsToTime("/storage/emulated/0/immomo/users/411097138/momentvideo/local_trans/d5CY8Ki-0.mp4"));
         setFullscreen();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
