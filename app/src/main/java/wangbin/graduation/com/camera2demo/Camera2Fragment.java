@@ -260,6 +260,9 @@ public class Camera2Fragment extends Fragment
                 Toast.makeText(activity, "Video saved: " + mNextVideoAbsolutePath,
                                Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Video saved: " + mNextVideoAbsolutePath);
+                Intent intent = new Intent(mContext,EditVideoActivity.class);
+                intent.putExtra("videoPath",mNextVideoAbsolutePath);
+                startActivity(intent);
             }
         } else {
             if (mNextVideoAbsolutePath != null) {
@@ -644,7 +647,7 @@ public class Camera2Fragment extends Fragment
                     Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity(),EditImageActivity.class);
                     intent.putExtra("editImage",text);
-//                    startActivity(intent);
+                    startActivity(intent);
                 }
             });
         }
