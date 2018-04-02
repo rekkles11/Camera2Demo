@@ -2,14 +2,13 @@ package wangbin.graduation.com.camera2demo.Adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 
 import java.util.List;
 
@@ -24,13 +23,17 @@ public class ThumbImageAdapter extends RecyclerView.Adapter<ThumbImageAdapter.Vi
 
     private Context mContext;
     private List<Bitmap> mList;
-    private int mItemW;
-    private int mBlackWidth;
-    private Boolean mIsBlack = false;
+    private static int mItemW;
+    private int mLeftBlack = 0;
+    private int mRightBlack =0;
+    private int mBlackNum =0;
     public ThumbImageAdapter(Context context, List<Bitmap> list,int itemW){
         this.mContext = context;
         this.mList = list;
         this.mItemW = itemW;
+        this.mLeftBlack = itemW;
+        this.mRightBlack = itemW;
+        this.mBlackNum = 2;
     }
 
     @Override
@@ -39,45 +42,38 @@ public class ThumbImageAdapter extends RecyclerView.Adapter<ThumbImageAdapter.Vi
         return new ViewHolder(view);
     }
 
+
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (position>0&&position<mList.size()+1) {
-            if (mIsBlack&&position == mList.size()){
-                ViewGroup.LayoutParams layoutParams = holder.mThumbImage.getLayoutParams();
-                layoutParams.width = mBlackWidth;
-                holder.mThumbImage.setImageDrawable(AppCompatResources.getDrawable(mContext, R.color.backgroundAlbum));
-            }else {
-                holder.mThumbImage.setImageBitmap(mList.get(position - 1));
-            }
-        }else {
+        holder.setIsRecyclable(false);
+        if (position > 0 && position < mList.size()+1) {
+            holder.mThumbImage.setImageBitmap(mList.get(position - 1));
+        } else if (position==0){
+            ViewGroup.LayoutParams layoutParams = holder.mThumbImage.getLayoutParams();
+            layoutParams.width = mLeftBlack;
+            holder.mThumbImage.setImageDrawable(AppCompatResources.getDrawable(mContext, R.color.backgroundAlbum));
 
+        }else if (position == mList.size()+1){
+            ViewGroup.LayoutParams layoutParams = holder.mThumbImage.getLayoutParams();
+            layoutParams.width = mRightBlack;
+            holder.mThumbImage.setImageDrawable(AppCompatResources.getDrawable(mContext, R.color.backgroundAlbum));
+        }else {
             holder.mThumbImage.setImageDrawable(AppCompatResources.getDrawable(mContext, R.color.backgroundAlbum));
         }
     }
 
     @Override
     public int getItemCount() {
-        return mList == null? 0 : mList.size()+2;
+        return mList == null? 0 : mList.size()+mBlackNum;
     }
 
-    public void addView(int width){
-        if (width>0) {
-            if (mIsBlack) {
-                mList.remove(mList.size() - 1);
-            }
-            Bitmap bitmap = mList.get(0).copy(Bitmap.Config.RGB_565, true);
-            mList.add(bitmap);
-            mIsBlack = true;
-            mBlackWidth = width;
-        }else {
-            if (mIsBlack) {
-                mList.remove(mList.size() - 1);
-            }
-            mIsBlack = false;
-        }
+
+    public void addView(int left,int right){
+        mLeftBlack = mItemW+left;
+        mRightBlack = mItemW +right;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    public  static class ViewHolder extends RecyclerView.ViewHolder{
         ImageView mThumbImage;
         public ViewHolder(View itemView) {
             super(itemView);

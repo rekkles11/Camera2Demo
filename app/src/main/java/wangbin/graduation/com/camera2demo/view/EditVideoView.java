@@ -132,7 +132,7 @@ public class EditVideoView extends FrameLayout implements View.OnClickListener{
                 isScrolling = false;
                 mSeekBar.setVisibility(VISIBLE);
                 LinearLayoutManager linearLayoutManager = (LinearLayoutManager)recyclerView.getLayoutManager();
-                int first = linearLayoutManager.findFirstVisibleItemPosition();
+                int first = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
                 int during = mVideoEndTime - mVideoStartTime;
                 mRecycleViewStartTime = first*1000;
                 mVideoStartTime = mRecycleViewStartTime +mProgressStart;
@@ -252,7 +252,9 @@ public class EditVideoView extends FrameLayout implements View.OnClickListener{
                 mProgressEnd = e;
                 mVideoStartTime = s+mRecycleViewStartTime;
                 mVideoEndTime = e+mRecycleViewStartTime;
-                mImageAdapter.addView((int)(mItemW*(((float)(10000-e ))/1000.0f)));
+                int left = (int)(mItemW*(((float)(s-0 ))/1000.0f));
+                int right= (int)(mItemW*(((float)(10000-e ))/1000.0f));
+                mImageAdapter.addView(left,right);
                 mImageAdapter.notifyDataSetChanged();
                 setAnimator(mValueAnimator,s,e);
                 mValueAnimator.start();
